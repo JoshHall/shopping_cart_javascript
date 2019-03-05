@@ -155,6 +155,17 @@ function updateTotals() {
   $('.total').text(`$${total}`);
 }
 
+function countDuplicates(id) {
+  let cart = JSON.parse(sessionStorage.getItem('cart'));
+  let count = 0;
+  for (let i in cart) {
+    if (cart[i].id == id) {
+      count += 1;
+    }
+  }
+  return count
+}
+
 // create a showCart method to render all items withing the cart variable
 function showCart(id) {
   // get value and parse sessionStorage
@@ -171,36 +182,25 @@ function showCart(id) {
 
     // send the proper string into the tbody section
     $('#cart').css('display','block');
-    let tempArr = [];
+
+    let duplicates = [];
 
     for (let product in cart) {
-      let count = 1;
+      let count = countDuplicates(cart[product].id);
 
-      // TODO: update count to and render quantity
-      /***********************************
-      for (let i in tempArr.length) {
-        if (cart[product].id == tempArr[i][0]) {
-          count += 33;
-        }
-        else {
-          count = 33;
-          tempArr.push(`${cart[product].id}: ${count}`);
-          console.log(tempArr);
-        }
+      if (duplicates.indexOf(cart[product].id) == -1) {
+        html += `
+          <tr>
+            <td>${count}</td>
+            <td>${cart[product].name}</td>
+            <td>$${(cart[product].price*count).toFixed(2)}</td>
+            <td>
+              <button class="btn btn-danger" onclick="removeItem('${cart[product].id}')">X</button>
+            </td>
+          </tr>
+        `;
+        duplicates.push(cart[product].id);
       }
-      *************************************/
-
-
-      html += `
-        <tr>
-          <td>${count}</td>
-          <td>${cart[product].name}</td>
-          <td>$${cart[product].price}</td>
-          <td>
-            <button class="btn btn-danger" onclick="removeItem('${cart[product].id}')">X</button>
-          </td>
-        </tr>
-      `
     }
 
     updateTotals();
